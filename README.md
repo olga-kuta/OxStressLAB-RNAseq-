@@ -26,14 +26,16 @@
 ```bash
 # Для Linux (Ubuntu/Debian):
 sudo apt-get install r-base
+```
 
 ## Установка пакетов
 В R-консоли выполните:
-### Установка менеджера пакетов Bioconductor
+```bash
+# Установка менеджера пакетов Bioconductor
 if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 
-### Основные пакеты
+# Основные пакеты
 BiocManager::install(c(
     "DESeq2",       # Анализ дифференциальной экспрессии
     "apeglm",       # Уточнение оценок log2FC
@@ -44,85 +46,94 @@ BiocManager::install(c(
 
 ### Проверка установки
 library(DESeq2)
+```
 
 ## Запуск пайплайна
 1. Подготовка данных
 Структура файлов:
-
+```bash
 project/
 ├── data/
 │   ├── counts.csv     # Таблица счетов (гены × образцы)
 │   └── metadata.csv   # Метаданные экспериментов
 └── scripts/
     └── rna_seq_pipeline.R
-Пример counts.csv:
+```
 
-csv
+Пример counts.csv:
+```bash
 gene,control_1,control_2,stress_1,stress_2
 gene1,150,200,50,30
 gene2,3000,2800,1000,900
+```
+
 2. Выполнение анализа
-r
+```bash
 ### Установка рабочей директории
 setwd("/path/to/project")
+```
 
 ### Запуск пайплайна
+```bash
 source("scripts/rna_seq_pipeline.R")
+```
 
 ## Частые ошибки и решения
 ### 1. Ошибка установки пакетов
-r
+```bash
 Error: package 'DESeq2' not found
-Решение:
+```
 
-r
-### Обновите Bioconductor
+Решение:
+```bash
+# Обновите Bioconductor
 BiocManager::install(version = "3.18")
 
-### Принудительная установка
+# Принудительная установка
 BiocManager::install("DESeq2", force = TRUE)
+```
 
 ### 2. Отсутствие apeglm
-r
+```bash
 Error in lfcShrink(..., type="apeglm"): 
   type='apeglm' requires the Bioconductor package 'apeglm'
-Решение:
+```
 
-r
+Решение:
+```bash
 BiocManager::install("apeglm")
+```
 
 ### 3. Проблема с vst()
-r
+```bash
 Warning: less than 'nsub' rows in count matrix
-Альтернатива:
+```
 
-r
+Альтернатива:
+```bash
 vsd <- varianceStabilizingTransformation(dds, blind=FALSE)
+```
 
 ### 4. Проблемы с памятью
 Симптомы:
-
-RStudio зависает
-
-Сообщения "cannot allocate vector of size..."
+- RStudio зависает
+- Сообщения "cannot allocate vector of size..."
 
 Решение:
-
-r
-### Увеличьте лимит памяти
+```bash
+# Увеличьте лимит памяти
 options(future.globals.maxSize = 8000 * 1024^2) # 8GB
+```
 
 ## Поддержка
 При возникновении проблем:
-
-Проверьте лог-файл logs/analysis.log
-
-Соберите информацию о системе:
-
-r
+- Проверьте лог-файл logs/analysis.log
+- Соберите информацию о системе:
+```bash
 sessionInfo()
+```
 
 Создайте Issue в репозитории с:
 - Текст ошибки
 - Пример входных данных
-- Вывод sessionInfo()
+- Вывод ```bash sessionInfo()```
