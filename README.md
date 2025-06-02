@@ -44,7 +44,7 @@ BiocManager::install(c(
     "clusterProfiler" # Функциональный анализ
 ))
 
-### Проверка установки
+# Проверка установки
 library(DESeq2)
 ```
 
