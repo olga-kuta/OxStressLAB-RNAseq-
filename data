@@ -1,0 +1,8 @@
+Транскриптомные (bulk RNA-seq) данные для штамма Lactiplantibacillus plantarum CAUH2 взяты из статьи Zhai Z, Yang Y, Wang H, Wang G, Ren F, Li Z, Hao Y. Global transcriptomic analysis of Lactobacillus plantarum CAUH2 in response to hydrogen peroxide stress. Food Microbiol. 2020 May;87:103389. doi: 10.1016/j.fm.2019.103389. Epub 2019 Nov 27. PMID: 31948630.:
+  данные RNA-seq доступны в NCBI GEO под идентификатором GSE99096
+  cсылка на датасет https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE99096
+  конкретная ссылка SRA: https://www.ncbi.nlm.nih.gov/sra?term=SRP107490
+
+Референсные данные:
+  https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/001/617/525/GCF_001617525.2_ASM161752v2/GCF_001617525.2_ASM161752v2_genomic.fna.gz
+  https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/001/617/525/GCF_001617525.2_ASM161752v2/GCF_001617525.2_ASM161752v2_genomic.gff.gz
