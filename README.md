@@ -1,15 +1,9 @@
-# OxStressLAB-RNAseq: Пайплайн для оценки влияния окислительного стресса на дифференциальную экспрессию генов у молочнокислых бактерий.
+# OxStressLAB-RNAseq: Automated RNA-seq Pipeline for Oxidative Stress Analysis in Lactic Acid Bacteria
 
-![Bioconda](https://img.shields.io/badge/Built_with-R%20%7C%20Bioconductor-blue)
-![License](https://img.shields.io/badge/License-MIT-green)
+**Description:**  
+This project implements an automated RNA-seq analysis pipeline using Snakemake to assess the impact of oxidative stress on gene expression in lactic acid bacteria.
 
-## Описание
-Пайплайн для анализа дифференциальной экспрессии генов у молочнокислых бактерий (LAB) при окислительном стрессе. Включает:
-- Контроль качества данных
-- Предобработку и нормализацию
-- Анализ дифференциальной экспрессии (DESeq2)
-- Визуализацию результатов
-- Функциональный анализ (GO/KEGG)
+---
 
 ## Системные требования
 | Компонент | Минимальные требования |
@@ -20,120 +14,131 @@
 | Память | 8 ГБ ОЗУ (16+ ГБ для больших датасетов) |
 | Место на диске | 5 ГБ свободного пространства |
 
-## Установка
+---
 
-### 1. Установка R и RStudio
-```bash
-# Для Linux (Ubuntu/Debian):
-sudo apt-get install r-base
-```
+## Project Structure
 
-## Установка пакетов
-В R-консоли выполните:
-```bash
-# Установка менеджера пакетов Bioconductor
-if (!requireNamespace("BiocManager", quietly = TRUE))
-    install.packages("BiocManager")
+- **data/**: Raw FASTQ files (paired-end reads)
+- **references/**: Reference genome and annotation
+- **scripts/**: Analysis scripts (R, Python)
+- **Snakefile**: Main pipeline definition for Snakemake
+- **results/**: Outputs (tables, plots, reports)
+- **logs/**: Log files and reports (MultiQC, Snakemake logs)
 
-# Основные пакеты
-BiocManager::install(c(
-    "DESeq2",       # Анализ дифференциальной экспрессии
-    "apeglm",       # Уточнение оценок log2FC
-    "pheatmap",     # Визуализация тепловых карт
-    "RColorBrewer", # Цветовые палитры
-    "clusterProfiler" # Функциональный анализ
-))
+---
 
-# Проверка установки
-library(DESeq2)
-```
+## Installation and Setup
 
-## Запуск пайплайна
-1. Подготовка данных
-Структура файлов:
-```bash
-project/
-├── data/
-│   ├── counts.csv     # Таблица счетов (гены × образцы)
-│   └── metadata.csv   # Метаданные экспериментов
-└── scripts/
-    └── rna_seq_pipeline.R
-```
+### 1. Install Miniconda (if not already installed)
 
-Пример counts.csv:
-```bash
-gene,control_1,control_2,stress_1,stress_2
-gene1,150,200,50,30
-gene2,3000,2800,1000,900
-```
+wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+bash Miniconda3-latest-Linux-x86_64.sh
 
-2. Выполнение анализа
-```bash
-# Установка рабочей директории
-setwd("/path/to/project")
-```
+text
 
-### Запуск пайплайна
-```bash
-source("scripts/rna_seq_pipeline.R")
-```
+### 2. Clone the Repository
 
-## Частые ошибки и решения
-### 1. Ошибка установки пакетов
-```bash
-Error: package 'DESeq2' not found
-```
+git clone https://github.com/olga-kuta/OxStressLAB-RNAseq-
+cd OxStressLAB-RNAseq-
 
-Решение:
-```bash
-# Обновите Bioconductor
-BiocManager::install(version = "3.18")
+text
 
-# Принудительная установка
-BiocManager::install("DESeq2", force = TRUE)
-```
+### 3. Create and Set Up the Conda Environment
 
-### 2. Отсутствие apeglm
-```bash
-Error in lfcShrink(..., type="apeglm"): 
-  type='apeglm' requires the Bioconductor package 'apeglm'
-```
+conda create -n RNA-seq
+conda activate RNA-seq
+conda install -n RNA-seq bioconda::hisat2
+conda install -n RNA-seq bioconda::fastqc
+conda install -n RNA-seq bioconda::multiqc
+conda install -n RNA-seq gffread
+conda install -n RNA-seq bioconda::subread
+conda install -n RNA-seq bioconda::samtools
 
-Решение:
-```bash
-BiocManager::install("apeglm")
-```
+text
 
-### 3. Проблема с vst()
-```bash
-Warning: less than 'nsub' rows in count matrix
-```
+### 4. Install R Packages
 
-Альтернатива:
-```bash
-vsd <- varianceStabilizingTransformation(dds, blind=FALSE)
-```
+conda activate RNA-seq
+R
 
-### 4. Проблемы с памятью
-Симптомы:
-- RStudio зависает
-- Сообщения "cannot allocate vector of size..."
+text
 
-Решение:
-```bash
-# Увеличьте лимит памяти
-options(future.globals.maxSize = 8000 * 1024^2) # 8GB
-```
+Inside R, run:
 
-## Поддержка
-При возникновении проблем:
-- Проверьте лог-файл logs/analysis.log
-- Соберите информацию о системе:
-```bash
-sessionInfo()
-```
+install.packages(c("ggplot2", "pheatmap", "ggrepel", "tidyr", "dplyr", "tibble"))
+if (!requireNamespace("BiocManager", quietly=TRUE))
+install.packages("BiocManager")
+BiocManager::install(c("DESeq2", "rtracklayer", "clusterProfiler"))
+q()
 
-Создайте Issue в репозитории с:
-- Текст ошибки
-- Пример входных данных
-- Вывод ```bash sessionInfo()```
+text
+
+---
+
+## Downloading Data
+
+### 1. Download Transcriptomic Data
+
+cd data
+wget http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR557/008/SRR5578738/SRR5578738_1.fastq.gz
+wget http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR557/008/SRR5578738/SRR5578738_2.fastq.gz
+wget http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR557/009/SRR5578739/SRR5578739_1.fastq.gz
+wget http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR557/009/SRR5578739/SRR5578739_2.fastq.gz
+wget http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR557/000/SRR5578740/SRR5578740_1.fastq.gz
+wget http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR557/000/SRR5578740/SRR5578740_2.fastq.gz
+wget http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR557/005/SRR5578735/SRR5578735_1.fastq.gz
+wget http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR557/005/SRR5578735/SRR5578735_2.fastq.gz
+wget http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR557/006/SRR5578736/SRR5578736_1.fastq.gz
+wget http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR557/006/SRR5578736/SRR5578736_2.fastq.gz
+wget http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR557/007/SRR5578737/SRR5578737_1.fastq.gz
+wget http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR557/007/SRR5578737/SRR5578737_2.fastq.gz
+gunzip *.fastq.gz
+cd ..
+
+text
+
+### 2. Download Reference Files
+
+cd references
+wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/001/617/525/GCF_001617525.2_ASM161752v2/GCF_001617525.2_ASM161752v2_genomic.fna.gz
+wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/001/617/525/GCF_001617525.2_ASM161752v2/GCF_001617525.2_ASM161752v2_genomic.gff.gz
+gunzip *.gz
+cd ..
+
+text
+
+---
+
+## Running the Pipeline
+
+snakemake -s snakemake.py -c <number_of_cores>
+
+text
+Replace `<number_of_cores>` with the number of CPU cores to use (e.g., `4`).
+
+---
+
+## Results
+
+- **Quality Control:** MultiQC reports in `results/multiqc/`
+- **Differential Expression:** Tables in `results/diffexp/`
+- **Visualizations:** Plots (PCA, heatmaps, volcano plots) in `results/plots/`
+- **Functional Enrichment:** GO/KEGG results in `results/enrichment/`
+
+---
+
+## Reproducibility
+
+- **Conda environment** ensures all dependencies are tracked.
+- **Snakemake workflow** automates the entire analysis.
+- **Version control** via Git.
+
+---
+
+## Additional Notes
+
+- **For best results, run all commands from the root of the repository.**
+- **If you encounter any issues, please check the logs in `logs/` and consult the Snakemake documentation.**
+- **For more information about the data and analysis, see the project repository and linked publications.**
+
+---
